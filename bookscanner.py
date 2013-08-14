@@ -14,8 +14,7 @@
 #       error-checking after calls to Popen?  raise exceptions?
 #       what should this do when it gets a signal from the OS?  now handling Ctrl-C in outer loop.
 #       set the outer loop to shut down the pi after some amount of inactivity?
-#
-## Ben Steinberg <benjamin_steinberg@harvard.edu>
+
 
 from time import time, sleep
 import sys
