@@ -1,6 +1,6 @@
 diy-bookscanner
 ===============
-This repo contains, at the moment, the [main script](bookscanner.py) and [LCD module](lcd.py) for running a [DIY bookscanner](http://www.diybookscanner.org/) using a Raspberry Pi.  The script, bookscanner.py, is derived from Mark Van den Borre's [test_keypedal.sh](https://github.com/markvdb/diybookscanner/blob/master/misc/test_keypedal.sh).  Per correspondence with Mark, this code is released under the AGPL.  
+This repo contains, at the moment, the [main script](bookscanner.py) and [LCD module](lcd.py) for running a [DIY bookscanner](http://www.diybookscanner.org/) using a [Raspberry Pi](http://www.raspberrypi.org/).  The script, bookscanner.py, is derived from Mark Van den Borre's [test_keypedal.sh](https://github.com/markvdb/diybookscanner/blob/master/misc/test_keypedal.sh).  Per correspondence with Mark, this code is released under the AGPL.  
 
 Like test_keypedal.sh, this script uses [gphoto](http://www.gphoto.org/) and [libptp2](http://libptp.sourceforge.net/) to communicate with the cameras, in this case a pair of Canon A2200 point-and-shoots.  It also relies on the [Canon Hack Development Kit (CHDK)](http://chdk.wikia.com/), enhanced firmware for selected Canon cameras.
 
