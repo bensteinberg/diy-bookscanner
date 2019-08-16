@@ -86,19 +86,19 @@ def detect_cams():
     if CAMS == 2:
         GPHOTOCAM1 = cmdoutput("gphoto2 --auto-detect|grep usb|sed -e 's/.*Camera *//g'|head -n1")
         GPHOTOCAM2 = cmdoutput("gphoto2 --auto-detect|grep usb|sed -e 's/.*Camera *//g'|tail -n1")
-        print GPHOTOCAM1, "is gphotocam1"
-        print GPHOTOCAM2, "is gphotocam2"
+        print(GPHOTOCAM1, "is gphotocam1")
+        print(GPHOTOCAM2, "is gphotocam2")
     
         GPHOTOCAM1ORIENTATION=cmdoutput("gphoto2 --port " + GPHOTOCAM1 + " --get-config /main/settings/ownername|grep Current|sed -e's/.*\ //'")
         GPHOTOCAM2ORIENTATION=cmdoutput("gphoto2 --port " + GPHOTOCAM2 + " --get-config /main/settings/ownername|grep Current|sed -e's/.*\ //'")
-        print "gphotocam1orientation is", GPHOTOCAM1ORIENTATION
-        print "gphotocam2orientation is", GPHOTOCAM2ORIENTATION
+        print("gphotocam1orientation is", GPHOTOCAM1ORIENTATION)
+        print("gphotocam2orientation is", GPHOTOCAM2ORIENTATION)
 
         CAM1=cmdoutput("echo " + GPHOTOCAM1 + "|sed -e 's/.*,//g'")
         CAM2=cmdoutput("echo " + GPHOTOCAM2 + "|sed -e 's/.*,//g'")
-        print "Detected 2 camera devices:", GPHOTOCAM1, "and", GPHOTOCAM2
+        print("Detected 2 camera devices:", GPHOTOCAM1, "and", GPHOTOCAM2)
     else: 
-        print "Number of camera devices does not equal 2. Giving up."
+        print("Number of camera devices does not equal 2. Giving up.")
         lcd.display(4, "", 1)
         lcd.display(2, "CAMERAS OFF.", 1)
         lcd.display(3, "RESTARTING...", 1)
@@ -115,7 +115,7 @@ def detect_cams():
         lcd.display(2, "OWNER NAME NOT SET.", 1)
         lcd.display(3, "RESTARTING...", 1)
         sleep(PAUSE)
-        print GPHOTOCAM1, "owner name is neither set to left or right. Please configure that before continuing."
+        print(GPHOTOCAM1, "owner name is neither set to left or right. Please configure that before continuing.")
         restart_program()
 
     if GPHOTOCAM2ORIENTATION == "left":
@@ -128,14 +128,14 @@ def detect_cams():
         lcd.display(2, "OWNER NAME NOT SET.", 1)
         lcd.display(3, "RESTARTING...", 1)
         sleep(PAUSE)
-        print GPHOTOCAM1, "owner name is neither set to left or right. Please configure that before continuing."
+        print(GPHOTOCAM1, "owner name is neither set to left or right. Please configure that before continuing.")
         restart_program()
 
 def delete_from_cams():
     lcd.display(3, "deleting from", 1)
     lcd.display(4, "cameras...", 1)
     for cam in LEFTCAM, RIGHTCAM:
-        print "deleting existing images from SD card on " + cam
+        print("deleting existing images from SD card on " + cam)
         cmd = PTPCAM + " --dev=" + cam + " -D; true"
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         sleep(SHORTPAUSE)
@@ -143,10 +143,10 @@ def delete_from_cams():
 
 def switch_to_record_mode():
     lcd.display(4, "switching mode...", 1)
-    print "Switching cameras to record mode..."
-    print "LEFTCAM is", LEFTCAM, "and RIGHTCAM is", RIGHTCAM
+    print("Switching cameras to record mode...")
+    print("LEFTCAM is", LEFTCAM, "and RIGHTCAM is", RIGHTCAM)
     for cam in LEFTCAM, RIGHTCAM:
-        print "Switching camera", cam, "to record mode and sleeping 1 second..."
+        print("Switching camera", cam, "to record mode and sleeping 1 second...")
         cmd=PTPCAM + " --dev=" + cam + " --chdk='mode 1' > /dev/null 2>&1 && sleep 1s"
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
     sleep(PAUSE)
@@ -154,9 +154,9 @@ def switch_to_record_mode():
 def set_zoom():
     lcd.display(4, "setting zoom...", 1)
     # TODO: make less naive about zoom setting (check before and after setting, ...)
-    print "Setting zoom..."
+    print("Setting zoom...")
     for cam in LEFTCAM, RIGHTCAM:
-        print "Setting camera", cam, "zoom to 3..."
+        print("Setting camera", cam, "zoom to 3...")
         lcd.display(4, "setting cam " + cam + " zoom", 1)
         # lua set_zoom() makes one camera shut down, looks like, so we're clicking:
         cmd=PTPCAM + " --dev=" + cam + " --chdk='lua while(get_zoom()<3) do click(\"zoom_in\") end'"
@@ -169,7 +169,7 @@ def set_zoom():
 
 def flash_off():
     lcd.display(4, "turning flash off...", 1)
-    print "Switching flash off..."
+    print("Switching flash off...")
     for cam in LEFTCAM, RIGHTCAM:
         cmd=PTPCAM + " --dev=" + cam + " --chdk='lua while(get_flash_mode()<2) do click(\"right\") end'"
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
@@ -191,16 +191,16 @@ def download_from_cams():
     # then downloading one at a time with ptpcam; now back to bulk, but waiting
     # an amount of time proportional to the number of files
     for pair in [LEFTCAM, "left"], [RIGHTCAM, "right"]:
-        print "Downloading images from", pair[0], "..."
+        print("Downloading images from", pair[0], "...")
         chdir(SCANDIRPREFIX+TIMESTAMP+"/"+pair[1])
         cmd = PTPCAM + " --dev=" + pair[0] + " -L | grep 0x | wc -l"
         numfiles = cmdoutput(cmd)
-        print "I see " + numfiles + " images on " + pair[0]
+        print("I see " + numfiles + " images on " + pair[0])
         lcd.display(4, numfiles + " files from " + pair[1], 1)
         cmd = PTPCAM + " --dev=" + pair[0] + " -G ; true"
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         sleeptime = DLFACTOR * int(numfiles)
-        print "sleeping " + str(sleeptime) + " seconds"
+        print("sleeping " + str(sleeptime) + " seconds")
         sleep(sleeptime)
     sleep(LONGPAUSE)
 
@@ -213,12 +213,12 @@ def download_from_cams():
             chown(thisfile, 33, 33)
             chmod(thisfile, 0744)
             counter += 1
-    print "Adjusted " + str(counter) + " files"
+    print("Adjusted " + str(counter) + " files")
 
 def set_iso():
     lcd.display(4, "setting ISO...", 1)
     for cam in LEFTCAM, RIGHTCAM:
-        print "Setting ISO mode to 1 for camera", cam
+        print("Setting ISO mode to 1 for camera", cam)
         cmd=PTPCAM + " --dev=" + cam + " --chdk=\"lua set_iso_real(50)\""
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         sleep(SHORTPAUSE)
@@ -227,7 +227,7 @@ def set_iso():
 def set_ndfilter():
     lcd.display(4, "setting ND filter...", 1)
     for cam in LEFTCAM, RIGHTCAM:
-        print "Disabling neutral density filter for", cam, "-- see http://chdk.wikia.com/wiki/ND_Filter"
+        print("Disabling neutral density filter for", cam, "-- see http://chdk.wikia.com/wiki/ND_Filter")
         cmd=PTPCAM + " --dev=" + cam + "--chdk=\"luar set_nd_filter(2)\""
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         sleep(SHORTPAUSE)
@@ -240,7 +240,7 @@ def outer_loop():
     # debounce code from http://www.cl.cam.ac.uk/projects/raspberrypi/tutorials/robot/buttons_and_switches/
     lcd.display(2, "TURN ON CAMERAS,", 1)
     lcd.display(3, "TAP PEDAL TO START", 1)
-    print "Starting outer foot pedal loop..."
+    print("Starting outer foot pedal loop...")
     prev_input = 0
     firstloop = 1
     # start = time()
@@ -264,7 +264,7 @@ def outer_loop():
                     # start = time()
                     lcd.display(2, "TURN ON CAMERAS,", 1)
                     lcd.display(3, "TAP PEDAL TO START", 1)
-                    print "Rejoining outer foot pedal loop..."
+                    print("Rejoining outer foot pedal loop...")
                 firstloop = 0
             prev_input = input
             # slight pause to debounce
@@ -274,7 +274,7 @@ def outer_loop():
             lcd.display(2, "GOODBYE", 2)
             sleep(PAUSE)
             lcd.clear()
-            print "Quitting."
+            print("Quitting.")
             sys.exit()
         text = marquee.next()
         lcd.display(1, text, 1)
@@ -286,7 +286,7 @@ def inner_loop():
     lcd.display(2, "", 1)
     lcd.display(3, "TAP TO SHOOT", 2)
     lcd.display(4, "ready", 1)
-    print "Starting inner foot pedal loop..."
+    print("Starting inner foot pedal loop...")
     start = time()
     prev_input = 0
     firstloop = 1
@@ -313,7 +313,7 @@ def inner_loop():
         if camera_count(BRAND) == 2:                                       # 0.58 sec from command line, faster inside the program? yes!
             pass
         else:
-            print "Number of camera devices does not equal 2. Try again."
+            print("Number of camera devices does not equal 2. Try again.")
             for cam in LEFTCAM, RIGHTCAM:
                 cmd=PTPCAM + " --dev=" + cam + " --chdk='lua play_sound(3)'"
                 p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
@@ -328,10 +328,10 @@ def inner_loop():
             lcd.display(2, "", 1)
             lcd.display(3, "TIMEOUT", 2)
             lcd.display(4, "", 1)
-            print "Foot pedal not pressed for", TMOUT, "seconds."
+            print("Foot pedal not pressed for", TMOUT, "seconds.")
             download_from_cams()
             delete_from_cams()
-            print "Quitting inner loop"
+            print("Quitting inner loop")
             return
         text = marquee.next()
         lcd.display(1, text, 1)
@@ -348,7 +348,7 @@ def shoot():
     global SHOTS
     lcd.display(3, "WAIT", 2)
     lcd.display(4, "shooting", 1)
-    print "Shooting with cameras", LEFTCAM, "(left) and ", RIGHTCAM, " (right)"
+    print("Shooting with cameras", LEFTCAM, "(left) and ", RIGHTCAM, " (right)")
     for cam in LEFTCAM, RIGHTCAM:
         cmd=PTPCAM + " --dev=" + cam + " --chdk='lua " + SHOTPARAMS + "'"
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
